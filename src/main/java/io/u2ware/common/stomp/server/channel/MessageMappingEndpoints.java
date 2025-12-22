@@ -1,4 +1,4 @@
-package io.u2ware.common.stomp.server.stomp;
+package io.u2ware.common.stomp.server.channel;
 
 
 import java.security.Principal;

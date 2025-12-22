@@ -9,7 +9,13 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn v-if="isAdmin" text variant="elevated" color="error" @click="start">
+      <v-btn
+        v-if="isAdmin"
+        text
+        variant="elevated"
+        color="error"
+        @click="start"
+      >
         <v-icon>mdi-account</v-icon> {{ $t("index.bar.start") }}
       </v-btn>
     </v-app-bar>
@@ -22,7 +28,7 @@
           <v-col cols="4">
             <v-card>
               <v-card-title class="d-flex align-center pe-2">
-                <v-icon icon="mdi-video-input-component"></v-icon> &nbsp;
+                <v-icon icon="mdi-cog"></v-icon> &nbsp;
                 Actions&nbsp;
               </v-card-title>
 
@@ -32,29 +38,30 @@
               /////////////////////////////////////////////////////////////////
               -->
               <!-- {{ connection }} -->
-              <v-textarea
-                class="ma-2"
-                label="url"
-                placeholder="ws://"
-                variant="outlined"
-                v-model="url"
-                rows="4"
-                :disabled="connection == true"
-              ></v-textarea>
-              <v-btn
-                block
-                color="primary"
-                v-if="connection == false"
-                @click="connectAction"
-                >Connect</v-btn
-              >
-              <v-btn
-                block
-                color="error"
-                v-if="connection == true"
-                @click="disconnectAction"
-                >Disonnect
-              </v-btn>
+              <v-card-text>
+                <v-textarea
+                  label="url"
+                  placeholder="ws://"
+                  variant="outlined"
+                  v-model="url"
+                  rows="4"
+                  :disabled="connection == true"
+                ></v-textarea>
+                <v-btn
+                  block
+                  color="primary"
+                  v-if="connection == false"
+                  @click="connectAction"
+                  >Connect</v-btn
+                >
+                <v-btn
+                  block
+                  color="error"
+                  v-if="connection == true"
+                  @click="disconnectAction"
+                  >Disonnect
+                </v-btn>
+              </v-card-text>
 
               <!-- 
               /////////////////////////////////////////////////////////////////
@@ -62,59 +69,59 @@
               /////////////////////////////////////////////////////////////////
               -->
               <!-- {{ subscription }} -->
+              <v-card-text>
+                <v-text-field
+                  v-model="dest"
+                  label="channel"
+                  placeholder="channel"
+                  variant="outlined"
+                  v-if="connection == true"
+                  :disabled="subscription != undefined"
+                ></v-text-field>
 
-              <v-text-field
-                class="ma-2"
-                v-model="dest"
-                label="destination"
-                placeholder="destination..."
-                variant="outlined"
-                v-if="connection == true"
-                :disabled="subscription != undefined"
-              ></v-text-field>
-
-              <v-btn
-                block
-                color="primary"
-                v-if="connection == true && subscription == undefined"
-                @click="subscribeAction"
-                >Subscribe</v-btn
-              >
-              <v-btn
-                block
-                color="error"
-                v-if="connection == true && subscription != undefined"
-                @click="unsubscribeAction"
-                >Unsubscribe</v-btn
-              >
-
+                <v-btn
+                  block
+                  color="primary"
+                  v-if="connection == true && subscription == undefined"
+                  @click="subscribeAction"
+                  >Subscribe</v-btn
+                >
+                <v-btn
+                  block
+                  color="error"
+                  v-if="connection == true && subscription != undefined"
+                  @click="unsubscribeAction"
+                  >Unsubscribe</v-btn
+                >
+              </v-card-text>
               <!-- 
               /////////////////////////////////////////////////////////////////
               //
               /////////////////////////////////////////////////////////////////
               -->
-              <v-textarea
-                class="ma-2"
-                label="sendMessage"
-                placeholder='{ "key" : value}'
-                variant="outlined"
-                v-model="msg"
-                rows="6"
-                v-if="subscription != undefined"
-              ></v-textarea>
-              <v-btn
-                block
-                color="primary"
-                v-if="subscription != undefined"
-                @click="sendMessage"
-                >Send</v-btn
-              >
+              <v-card-text>
+                <v-textarea
+                  label="sendMessage"
+                  placeholder='{ "key" : value}'
+                  variant="outlined"
+                  v-model="msg"
+                  rows="4"
+                  v-if="subscription != undefined"
+                ></v-textarea>
+                <v-btn
+                  block
+                  color="primary"
+                  v-if="subscription != undefined"
+                  @click="sendMessage"
+                  >Send</v-btn
+                >
+              </v-card-text>
             </v-card>
           </v-col>
           <v-col cols="8">
             <v-card>
               <v-card-title class="d-flex align-center pe-2">
-                <v-icon icon="mdi-video-input-component"></v-icon> &nbsp;
+                <v-icon icon="mdi-format-list-checkbox"></v-icon> &nbsp;
                 Messages&nbsp;
               </v-card-title>
 
@@ -125,7 +132,7 @@
                   <thead>
                     <tr>
                       <th class="text-left" width="20%">Timestamp</th>
-                      <th class="text-left" width="10%">Principal</th>
+                      <th class="text-left" width="20%">Principal</th>
                       <th class="text-left">Payload</th>
                     </tr>
                   </thead>
@@ -159,17 +166,16 @@ import $contentsApi from "@/assets/apis/contents";
 
 export default {
   data: () => ({
-
-    isAdmin : false,
+    isAdmin: false,
 
     url: undefined,
     dest: undefined,
     msg: undefined,
 
+    ws: undefined,
     connection: false,
     subscription: undefined,
 
-    ws: undefined,
     messages: [],
   }),
 
@@ -247,9 +253,9 @@ export default {
       console.log(x, "sendMessage", this.msg);
       let headers = {};
       let payload = undefined;
-      try{
+      try {
         payload = JSON.stringify(JSON.parse(this.msg));
-      }catch{
+      } catch {
         payload = JSON.stringify(this.msg);
       }
       this.ws.send(`/app/${this.dest}`, headers, payload);
@@ -259,18 +265,16 @@ export default {
   watch: {},
 
   mounted() {
-
-      $contentsApi.oauth2
-        .permission(["ROLE_ADMIN"])
-        .then((r) => {
-          console.log(x, "mounted()", 1, r);
-          this.isAdmin = true;
-        })
-        .catch((r) => {
-          console.log(x, "mounted()", 222, r);
-          this.isAdmin = false;
-        });
-
+    $contentsApi.oauth2
+      .permission(["ROLE_ADMIN"])
+      .then((r) => {
+        console.log(x, "mounted()", 1, r);
+        this.isAdmin = true;
+      })
+      .catch((r) => {
+        console.log(x, "mounted()", 222, r);
+        this.isAdmin = false;
+      });
   },
 };
 </script>
