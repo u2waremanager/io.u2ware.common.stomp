@@ -15,9 +15,9 @@ public interface WebsocketStompClientHandler extends StompFrameHandler {
     }
 
     @Override
-    default void handleFrame(StompHeaders headers, Object payload) {
-        handleFrame(headers, (String)payload);
+    default void handleFrame(StompHeaders headers, Object message) {
+        handleFrame(headers, (JsonNode)message);
     }
 
-    void handleFrame(StompHeaders headers, JsonNode payload);
+    void handleFrame(StompHeaders headers, JsonNode message);
 }

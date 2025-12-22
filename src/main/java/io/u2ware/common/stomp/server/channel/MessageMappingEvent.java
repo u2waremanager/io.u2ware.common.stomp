@@ -8,6 +8,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.broker.BrokerAvailabilityEvent;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.socket.messaging.AbstractSubProtocolEvent;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
@@ -27,40 +28,39 @@ public class MessageMappingEvent {
 
     @EventListener
     public void SessionConnectEvent(SessionConnectedEvent e) {
-        logger.info("SessionConnectEvent");
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(e.getMessage());
-        handleMessage(accessor, "SessionConnectEvent");
+        handleMessage(e);
     }
     @EventListener
     public void SessionConnectedEvent(SessionConnectedEvent e) {
-        logger.info("SessionConnectedEvent");
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(e.getMessage());
-        handleMessage(accessor, "SessionConnectedEvent");
+        // handleMessage(e);
     }
     @EventListener
     public void SessionSubscribeEvent(SessionSubscribeEvent e) {
-        logger.info("SessionSubscribeEvent");
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(e.getMessage());
-        handleMessage(accessor, "SessionSubscribeEvent");
+        handleMessage(e);
     }
     @EventListener
     public void SessionUnsubscribeEvent(SessionUnsubscribeEvent e) {
-        logger.info("SessionUnsubscribeEvent");
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(e.getMessage());
-        handleMessage(accessor, "SessionUnsubscribeEvent");
+        handleMessage(e);
     }
     @EventListener
     public void SessionDisconnectEvent(SessionDisconnectEvent e) {
-        logger.info("SessionDisconnectEvent");
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(e.getMessage());
-        handleMessage(accessor, "SessionDisconnectEvent");
+        handleMessage(e);
     }
 
-    private void handleMessage(StompHeaderAccessor accessor, String payload){
+    private void handleMessage(AbstractSubProtocolEvent e){
+
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(e.getMessage());
+        // logger.info(accessor.getMessageHeaders());
+
+        ObjectNode payload = mapper.createObjectNode();
+        payload.put("destination", accessor.getDestination());
+        payload.put("event", accessor.getMessageType().name());
+
+        
         ObjectNode message = mapper.createObjectNode();
         message.put("timestamp", System.currentTimeMillis());
         message.put("principal", accessor.getUser().getName());
-        message.put("payload", payload);
+        message.set("payload", payload);
 
         String destination = "/topic/channel";
         operations.convertAndSend(destination, message);   

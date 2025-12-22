@@ -1,4 +1,4 @@
-package io.u2ware.common.stomp.server.connection;
+package io.u2ware.common.stomp.server.client;
 
 import java.net.URI;
 
