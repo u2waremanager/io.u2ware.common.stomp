@@ -1,0 +1,93 @@
+package io.u2ware.common.stomp.client.config;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.converter.StringMessageConverter;
+import org.springframework.messaging.simp.stomp.StompSessionHandler;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.util.StringUtils;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
+
+import ch.qos.logback.core.util.StringUtil;
+import io.u2ware.common.stomp.client.WebsocketStompClient;
+import io.u2ware.common.stomp.client.WebsocketStompClientHandler;
+import io.u2ware.common.stomp.client.handlers.JsonSubscribeHandler;
+import io.u2ware.common.stomp.client.handlers.LoggingHandler;
+
+@Configuration
+@EnableScheduling
+public class WebsocketStompClientConfiguration implements InitializingBean, DisposableBean{
+    
+    @Bean
+    public WebsocketStompClientProperties websocketStompClientProperties() {
+        return new WebsocketStompClientProperties();
+    }
+
+    @Bean
+    public WebsocketStompClient websocketStompClient(WebsocketStompClientProperties properties) {
+        return WebsocketStompClient.withSockJS();
+    }
+
+    @Bean
+    public Reconnector websocketStompClientConnection(){
+        return new Reconnector();
+    }
+
+
+    public static class Reconnector {
+
+    	protected Log logger = LogFactory.getLog(getClass());
+
+        private @Autowired WebsocketStompClientProperties properties;
+        private @Autowired WebsocketStompClient connection;
+        private @Autowired(required = false) Map<String, WebsocketStompClientHandler> subscribers;
+
+        @Scheduled(initialDelay=5000, fixedRate = 5000)
+        public void reconnect(){
+
+            if(connection.isConnected()) return;
+
+            String url = properties.getUrl();
+            if(! StringUtils.hasLength(url)) return;
+
+            StompSessionHandler handler =  new LoggingHandler(properties.getName());
+
+            connection.connect(url, handler).whenComplete((c,u)->{
+                if(subscribers != null) {
+                    for(Entry<String,WebsocketStompClientHandler> entry : subscribers.entrySet()) {
+                        c.subscribe(entry.getKey(), entry.getValue());
+                        logger.info("subscribe "+entry.getKey());
+                    }
+                }
+            });
+        } 
+    }
+
+
+    private ExecutorService executorService;
+
+    @Override
+    public void destroy() throws Exception {
+        executorService.shutdownNow();
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        executorService = Executors.newFixedThreadPool(2);
+    }
+
+}
