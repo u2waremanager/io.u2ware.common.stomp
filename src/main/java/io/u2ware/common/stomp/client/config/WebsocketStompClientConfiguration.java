@@ -10,22 +10,15 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.StringUtils;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
 
-import ch.qos.logback.core.util.StringUtil;
 import io.u2ware.common.stomp.client.WebsocketStompClient;
 import io.u2ware.common.stomp.client.WebsocketStompClientHandler;
-import io.u2ware.common.stomp.client.handlers.JsonSubscribeHandler;
 import io.u2ware.common.stomp.client.handlers.LoggingHandler;
 
 @Configuration
