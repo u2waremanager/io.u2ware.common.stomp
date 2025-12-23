@@ -23,7 +23,7 @@ import io.u2ware.common.stomp.server.oauth2.Oauth2Docs;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-public class ConnectionTest {
+public class Client01Tests {
     
     protected Log logger = LogFactory.getLog(getClass());
 

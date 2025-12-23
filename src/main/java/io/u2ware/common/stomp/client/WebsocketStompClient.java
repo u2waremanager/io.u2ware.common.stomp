@@ -15,6 +15,7 @@ import org.springframework.messaging.converter.CompositeMessageConverter;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.converter.StringMessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSession.Subscription;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
@@ -31,6 +32,7 @@ import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.u2ware.common.stomp.client.handlers.LoggingHandler;
+import io.u2ware.common.stomp.client.handlers.StompJsonFrameHandler;
 
 
 public class WebsocketStompClient {
@@ -182,6 +184,14 @@ public class WebsocketStompClient {
             }
         });
     }    
+
+    public CompletableFuture<WebsocketStompClient> subscribe(String destination, WebsocketStompClientHandler handler){
+        return subscribe(destination, new StompJsonFrameHandler(){
+           public void handleFrame(StompHeaders headers, JsonNode payload) {
+                handler.handleFrame(headers, payload);
+            }
+        });
+    }
 
 
     public CompletableFuture<WebsocketStompClient> unsubscribe(String destination){

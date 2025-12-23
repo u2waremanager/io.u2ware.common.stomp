@@ -5,17 +5,19 @@ import java.lang.reflect.Type;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 
-public interface TextSubscribeHandler extends StompFrameHandler {
+import com.fasterxml.jackson.databind.JsonNode;
+
+public interface StompJsonFrameHandler extends StompFrameHandler {
 
     @Override
     default Type getPayloadType(StompHeaders headers) {
-        return String.class;
+        return JsonNode.class;
     }
 
     @Override
     default void handleFrame(StompHeaders headers, Object payload) {
-        handleFrame(headers, (String)payload);
+        handleFrame(headers, (JsonNode)payload);
     }
 
-    void handleFrame(StompHeaders headers, String payload);
+    void handleFrame(StompHeaders headers, JsonNode payload);
 }

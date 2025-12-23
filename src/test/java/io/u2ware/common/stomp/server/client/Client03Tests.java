@@ -20,13 +20,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.u2ware.common.stomp.client.WebsocketStompClient;
+import io.u2ware.common.stomp.client.WebsocketStompClientHandler;
 import io.u2ware.common.stomp.client.handlers.LoggingHandler;
 import io.u2ware.common.stomp.server.oauth2.Oauth2Docs;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-public class SubscribeTest {
+public class Client03Tests {
     
     protected Log logger = LogFactory.getLog(getClass());
 
@@ -41,25 +42,36 @@ public class SubscribeTest {
     @Test
     public void contextLoads() throws Exception{
 
-		// CompletableFuture<WebsocketStompClient> client1 = 
 		WebsocketStompClient.withSockJS()
 			.connect(od.stomp(port, "client1"), new LoggingHandler("client1"))
 			.whenComplete((c1, u1)->{
 				System.err.println("client1 connect ");
 
-				c1.sleep(100).subscribe("/topic/room1", new StompFrameHandler(){
+				c1.sleep(100).subscribe("/topic/channel", 
 
-					@Override
-					public Type getPayloadType(StompHeaders headers) {
-						return JsonNode.class;
+					(h,p)->{
+						System.err.println("RECEIVE111: "+p);
 					}
 
-					@Override
-					public void handleFrame(StompHeaders headers, Object payload) {
-						System.err.println("RECEIVE: "+payload);
-					}
 
-				})
+					// new WebsocketStompClientHandler() {
+					// 	@Override
+					// 	public void handleFrame(StompHeaders headers, JsonNode payload) {
+					// 		System.err.println("RECEIVE222: "+payload);
+					// 	}					
+					// }
+				
+					// new StompFrameHandler(){
+					// 	@Override
+					// 	public Type getPayloadType(StompHeaders headers) {
+					// 		return JsonNode.class;
+					// 	}
+					// 	@Override
+					// 	public void handleFrame(StompHeaders headers, Object payload) {
+					// 		System.err.println("RECEIVE3333: "+payload);
+					// 	}
+					// }
+				)
 				.whenComplete((c2,u2)->{
 					System.err.println("client1 subscribe ");					
 				});
@@ -69,30 +81,32 @@ public class SubscribeTest {
 
 		Thread.sleep(1000);			
 		
-		CompletableFuture<WebsocketStompClient> client2 = WebsocketStompClient.withSockJS()
+		WebsocketStompClient.withSockJS()
 			.connect(od.stomp(port, "client2"), new LoggingHandler("client2"))
 			.whenComplete((c1, u1)->{
-				System.err.println("client2 connect ");
+				c1.sleep(100).subscribe("/topic/aaaa", 
+				
+					//##2				
+					// new WebsocketStompClientHandler() {
+					// 	@Override
+					// 	public void handleFrame(StompHeaders headers, JsonNode payload) {
+					// 		System.err.println("RECEIVE: "+payload);
+					// 	}					
+					// }
+					
+					//##1
+					(h,p)->{
+						System.err.println("RECEIVE: "+p);
+					}
+
+				);
 
 
-				String msg = "hello world";
-				JsonNode node = mapper.createObjectNode();
 
-				c1.sleep(100).send("/app/room1", msg);
+				c1.sleep(100).unsubscribe("/topic/aaaa");
 
-
-				// c1.sleep(100).subscribe("/topic/room1", new TextStompFrameHandler())
-				// 	.whenComplete((c2,u2)->{
-				// 		System.err.println("client2 subscribe ");
-
-				// 	});
-				// 
 			});
 		
-		Thread.sleep(1000);		
-		
-		
-
-
+		Thread.sleep(1000);
     }    
 }

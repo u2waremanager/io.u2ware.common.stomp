@@ -20,14 +20,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.u2ware.common.stomp.client.WebsocketStompClient;
-import io.u2ware.common.stomp.client.WebsocketStompClientHandler;
 import io.u2ware.common.stomp.client.handlers.LoggingHandler;
 import io.u2ware.common.stomp.server.oauth2.Oauth2Docs;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @AutoConfigureRestDocs
-public class ChannelTest {
+public class Client02Tests {
     
     protected Log logger = LogFactory.getLog(getClass());
 
@@ -48,32 +47,19 @@ public class ChannelTest {
 			.whenComplete((c1, u1)->{
 				System.err.println("client1 connect ");
 
-				c1.sleep(100).subscribe("/topic/channel", 
-
-				new WebsocketStompClientHandler() {
+				c1.sleep(100).subscribe("/topic/room1", new StompFrameHandler(){
 
 					@Override
-					public void handleFrame(StompHeaders headers, JsonNode payload) {
+					public Type getPayloadType(StompHeaders headers) {
+						return JsonNode.class;
+					}
+
+					@Override
+					public void handleFrame(StompHeaders headers, Object payload) {
 						System.err.println("RECEIVE: "+payload);
-					}					
-				}
-				
-				// new StompFrameHandler(){
+					}
 
-				// 	@Override
-				// 	public Type getPayloadType(StompHeaders headers) {
-				// 		return JsonNode.class;
-				// 	}
-
-				// 	@Override
-				// 	public void handleFrame(StompHeaders headers, Object payload) {
-				// 		System.err.println("RECEIVE: "+payload);
-				// 	}
-
-				// }
-				
-				
-				)
+				})
 				.whenComplete((c2,u2)->{
 					System.err.println("client1 subscribe ");					
 				});
@@ -86,18 +72,27 @@ public class ChannelTest {
 		CompletableFuture<WebsocketStompClient> client2 = WebsocketStompClient.withSockJS()
 			.connect(od.stomp(port, "client2"), new LoggingHandler("client2"))
 			.whenComplete((c1, u1)->{
-				c1.sleep(100).subscribe("/topic/aaaa", new WebsocketStompClientHandler() {
+				System.err.println("client2 connect ");
 
-					@Override
-					public void handleFrame(StompHeaders headers, JsonNode payload) {
-						System.err.println("RECEIVE: "+payload);
-					}					
-				});
 
-				c1.sleep(100).unsubscribe("/topic/aaaa");
+				String msg = "hello world";
+				JsonNode node = mapper.createObjectNode();
 
+				c1.sleep(100).send("/app/room1", msg);
+
+
+				// c1.sleep(100).subscribe("/topic/room1", new TextStompFrameHandler())
+				// 	.whenComplete((c2,u2)->{
+				// 		System.err.println("client2 subscribe ");
+
+				// 	});
+				// 
 			});
 		
-		Thread.sleep(1000);
+		Thread.sleep(1000);		
+		
+		
+
+
     }    
 }
