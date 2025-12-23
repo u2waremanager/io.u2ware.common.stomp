@@ -10,7 +10,7 @@
 
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>io.u2ware</groupId>
+	<groupId>io.u2ware.common</groupId>
 	<artifactId>u2ware-common-stomp</artifactId>
 	<version>3.4.11</version>
 	<name>u2ware-common-stomp</name>
@@ -44,46 +44,13 @@
 	<dependencies>
 
 
-		<!-- <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-amqp</artifactId>
-			<scope>provided</scope>
-		</dependency> -->
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-reactor-netty</artifactId>
-			<scope>provided</scope>
-		</dependency> -->
 
-<!-- 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-		</dependency>	
-
-		<dependency>
-			<groupId>org.springframework.security</groupId>
-			<artifactId>spring-security-messaging</artifactId>
-		</dependency>
- -->
-
-		<!-- <dependency>
-			<groupId>io.u2ware</groupId>
-			<artifactId>common.oauth2</artifactId>
-			<version>${u2ware.version}</version>
-		</dependency>  -->
-
-<!-- 
--->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -91,24 +58,22 @@
 			<scope>test</scope>
 		</dependency>
 
-
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<annotationProcessorPaths>
-						<path>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</path>
-					</annotationProcessorPaths>
-				</configuration>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
 
