@@ -5,15 +5,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "io.u2ware.common.stomp.client")
 public class WebsocketStompClientProperties {
 
-    private String name;
+    // private String name;
     private String url ;
 
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
+    // public String getName() {
+    //     return name;
+    // }
+    // public void setName(String name) {
+    //     this.name = name;
+    // }
     public String getUrl() {
         return url;
     }
@@ -24,6 +24,6 @@ public class WebsocketStompClientProperties {
 
     @Override
     public String toString() {
-        return "WebsocketStompClientProperties [name=" + name + ", url=" + url + "]";
+        return "WebsocketStompClientProperties [url=" + url + "]";
     }
 }

@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.stomp.StompSessionHandler;
@@ -41,10 +42,14 @@ public class WebsocketStompClientConfiguration implements InitializingBean, Disp
     }
 
 
+
+
     public static class Reconnector {
 
     	protected Log logger = LogFactory.getLog(getClass());
 
+
+        private @Value("${spring.application.name:}") String applicationName;
         private @Autowired WebsocketStompClientProperties properties;
         private @Autowired WebsocketStompClient connection;
         private @Autowired(required = false) Map<String, WebsocketStompClientHandler> subscribers;
@@ -57,7 +62,7 @@ public class WebsocketStompClientConfiguration implements InitializingBean, Disp
             String url = properties.getUrl();
             if(! StringUtils.hasLength(url)) return;
 
-            StompSessionHandler handler =  new LoggingHandler(properties.getName());
+            StompSessionHandler handler =  new LoggingHandler(applicationName);
 
             connection.connect(url, handler).whenComplete((c,u)->{
                 if(subscribers != null) {
