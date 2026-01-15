@@ -5,15 +5,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "io.u2ware.common.stomp.client")
 public class WebsocketStompClientProperties {
 
-    // private String name;
     private String url ;
+    private String destination;
 
-    // public String getName() {
-    //     return name;
-    // }
-    // public void setName(String name) {
-    //     this.name = name;
-    // }
+    public String getDestination() {
+        return destination;
+    }
+    public void setDestination(String destination) {
+        this.destination = destination;
+    }
+
     public String getUrl() {
         return url;
     }
