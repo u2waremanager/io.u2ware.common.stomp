@@ -8,4 +8,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 public interface WebsocketStompClientHandler {
 
     void handleFrame(StompHeaders headers, JsonNode message);
+
+
+    default boolean isEventHandler(){
+        return false;
+    }
 }
