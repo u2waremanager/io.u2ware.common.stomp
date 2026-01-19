@@ -7,10 +7,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 @FunctionalInterface
 public interface WebsocketStompClientHandler {
 
+   
+
     void handleFrame(StompHeaders headers, JsonNode message);
 
+    default String getDestination() {
+        return null;
+    }    
 
-    default boolean isEventHandler(){
-        return false;
-    }
 }

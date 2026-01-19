@@ -67,12 +67,12 @@ public class WebsocketStompClientConfiguration implements InitializingBean, Disp
             connection.connect(url, handler).whenComplete((c,u)->{
                 if(subscribers != null) {
                     for(Entry<String,WebsocketStompClientHandler> entry : subscribers.entrySet()) {
-                        if(entry.getValue().isEventHandler()) {
-                            c.subscribe(properties.getDestination(), entry.getValue());
-                        }else{
-                            c.subscribe(entry.getKey(), entry.getValue());
+
+                        String destination = entry.getValue().getDestination();
+                        if(StringUtils.hasText(destination)) {
+                            c.subscribe(destination, entry.getValue());
+                            logger.info("\t ["+destination+"]: "+entry.getValue());
                         }
-                        logger.info("subscribe "+entry.getKey());
                     }
                 }
             });
