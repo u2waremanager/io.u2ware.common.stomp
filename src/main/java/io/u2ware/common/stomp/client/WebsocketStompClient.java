@@ -188,7 +188,7 @@ public class WebsocketStompClient {
     public CompletableFuture<WebsocketStompClient> subscribe(String destination, WebsocketStompClientHandler handler){
         return subscribe(destination, new StompJsonFrameHandler(){
            public void handleFrame(StompHeaders headers, JsonNode payload) {
-                handler.handleFrame(headers, payload);
+                handler.handleFrame(WebsocketStompClient.this, payload);
             }
         });
     }

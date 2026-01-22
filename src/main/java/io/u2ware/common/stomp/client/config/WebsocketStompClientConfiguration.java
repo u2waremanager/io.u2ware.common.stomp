@@ -27,12 +27,12 @@ import io.u2ware.common.stomp.client.handlers.LoggingHandler;
 public class WebsocketStompClientConfiguration implements InitializingBean, DisposableBean{
     
     @Bean
-    public WebsocketStompClientProperties websocketStompClientProperties() {
-        return new WebsocketStompClientProperties();
+    public WebsocketStompProperties websocketStompClientProperties() {
+        return new WebsocketStompProperties();
     }
 
     @Bean
-    public WebsocketStompClient websocketStompClient(WebsocketStompClientProperties properties) {
+    public WebsocketStompClient websocketStompClient(WebsocketStompProperties properties) {
         return WebsocketStompClient.withSockJS();
     }
 
@@ -50,7 +50,7 @@ public class WebsocketStompClientConfiguration implements InitializingBean, Disp
 
 
         private @Value("${spring.application.name:}") String applicationName;
-        private @Autowired WebsocketStompClientProperties properties;
+        private @Autowired WebsocketStompProperties properties;
         private @Autowired WebsocketStompClient connection;
         private @Autowired(required = false) Map<String, WebsocketStompClientHandler> subscribers;
 
