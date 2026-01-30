@@ -49,7 +49,7 @@ public class WebsocketStompClientConfiguration implements InitializingBean, Disp
     	protected Log logger = LogFactory.getLog(getClass());
 
 
-        private @Value("${spring.application.name:}") String applicationName;
+        private @Value("${spring.application.name:u2ware-stomp-server}") String applicationName;
         private @Autowired WebsocketStompProperties properties;
         private @Autowired WebsocketStompClient connection;
         private @Autowired(required = false) Map<String, WebsocketStompClientHandler> subscribers;
